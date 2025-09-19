@@ -21,18 +21,23 @@ import androidx.core.content.ContextCompat;
 
 import com.smartassistant.services.GameAnalysisService;
 import com.smartassistant.services.ScreenCaptureService;
+import com.smartassistant.ai.ModelDownloadManager;
+import com.smartassistant.overlay.BubbleOverlayService;
+import com.smartassistant.overlay.NotificationTipManager;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_SCREEN_CAPTURE = 1000;
     private static final int REQUEST_OVERLAY_PERMISSION = 1001;
 
-    private Button btnStartService, btnStopService, btnSettings;
-    private TextView statusText, detectedGame, suggestionText;
+    private Button btnStartService, btnStopService, btnSettings, btnDownloadModels;
+    private TextView statusText, detectedGame, suggestionText, downloadProgress;
     private CardView suggestionsCard;
 
     private MediaProjectionManager mediaProjectionManager;
     private boolean isServiceRunning = false;
+    private ModelDownloadManager modelDownloadManager;
+    private NotificationTipManager notificationTipManager;
 
     // Activity result launcher for screen capture permission
     private ActivityResultLauncher<Intent> screenCaptureResultLauncher =
@@ -61,17 +66,25 @@ public class MainActivity extends AppCompatActivity {
         
         mediaProjectionManager = (MediaProjectionManager) 
             getSystemService(MEDIA_PROJECTION_SERVICE);
+            
+        // Initialize AI model download manager
+        initializeModelDownloader();
+        
+        // Initialize notification tip manager
+        notificationTipManager = new NotificationTipManager(this);
     }
 
     private void initViews() {
         btnStartService = findViewById(R.id.btn_start_service);
         btnStopService = findViewById(R.id.btn_stop_service);
         btnSettings = findViewById(R.id.btn_settings);
+        btnDownloadModels = findViewById(R.id.btn_download_models);
         
         statusText = findViewById(R.id.status_text);
         detectedGame = findViewById(R.id.detected_game);
         suggestionText = findViewById(R.id.suggestion_text);
         suggestionsCard = findViewById(R.id.suggestions_card);
+        downloadProgress = findViewById(R.id.download_progress);
     }
 
     private void setupClickListeners() {
@@ -88,6 +101,88 @@ public class MainActivity extends AppCompatActivity {
         btnSettings.setOnClickListener(v -> {
             openAccessibilitySettings();
         });
+        
+        btnDownloadModels.setOnClickListener(v -> {
+            downloadAIModels();
+        });
+    }
+    
+    private void initializeModelDownloader() {
+        modelDownloadManager = new ModelDownloadManager(this);
+        modelDownloadManager.setProgressListener(new ModelDownloadManager.DownloadProgressListener() {
+            @Override
+            public void onDownloadStarted(String modelName) {
+                runOnUiThread(() -> {
+                    downloadProgress.setText("بدء تحميل " + getModelDisplayName(modelName) + "...");
+                    btnDownloadModels.setEnabled(false);
+                });
+            }
+
+            @Override
+            public void onDownloadProgress(String modelName, int progress, long downloadedBytes, long totalBytes) {
+                runOnUiThread(() -> {
+                    String progressText = String.format("تحميل %s: %d%% (%s / %s)", 
+                        getModelDisplayName(modelName), 
+                        progress,
+                        formatBytes(downloadedBytes),
+                        formatBytes(totalBytes));
+                    downloadProgress.setText(progressText);
+                });
+            }
+
+            @Override
+            public void onDownloadCompleted(String modelName, String filePath) {
+                runOnUiThread(() -> {
+                    downloadProgress.setText("تم تحميل " + getModelDisplayName(modelName) + " بنجاح!");
+                    checkAllModelsDownloaded();
+                });
+            }
+
+            @Override
+            public void onDownloadFailed(String modelName, String error) {
+                runOnUiThread(() -> {
+                    downloadProgress.setText("فشل تحميل " + getModelDisplayName(modelName) + ": " + error);
+                    btnDownloadModels.setEnabled(true);
+                });
+            }
+        });
+    }
+    
+    private void downloadAIModels() {
+        if (!checkPermissions()) {
+            return;
+        }
+        
+        downloadProgress.setText("جاري التحقق من النماذج الموجودة...");
+        modelDownloadManager.downloadAllModels();
+    }
+    
+    private void checkAllModelsDownloaded() {
+        boolean allDownloaded = modelDownloadManager.isModelDownloaded(ModelDownloadManager.GAME_DETECTION_MODEL) &&
+                              modelDownloadManager.isModelDownloaded(ModelDownloadManager.CARD_DETECTION_MODEL);
+        
+        if (allDownloaded) {
+            downloadProgress.setText("✅ جميع النماذج جاهزة! يمكنك الآن بدء الخدمة");
+            btnDownloadModels.setEnabled(true);
+            btnStartService.setEnabled(true);
+        }
+    }
+    
+    private String getModelDisplayName(String modelName) {
+        switch (modelName) {
+            case ModelDownloadManager.GAME_DETECTION_MODEL:
+                return "نموذج اكتشاف الألعاب";
+            case ModelDownloadManager.CARD_DETECTION_MODEL:
+                return "نموذج اكتشاف البطاقات";
+            default:
+                return modelName;
+        }
+    }
+    
+    private String formatBytes(long bytes) {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return String.format("%.1f KB", bytes / 1024.0);
+        return String.format("%.1f MB", bytes / (1024.0 * 1024.0));
     }
 
     private boolean checkPermissions() {
@@ -121,6 +216,10 @@ public class MainActivity extends AppCompatActivity {
         Intent analysisIntent = new Intent(this, GameAnalysisService.class);
         startService(analysisIntent);
         
+        // Start bubble overlay service
+        Intent bubbleIntent = new Intent(this, BubbleOverlayService.class);
+        startService(bubbleIntent);
+        
         updateServiceStatus(true);
     }
 
@@ -130,6 +229,15 @@ public class MainActivity extends AppCompatActivity {
         
         Intent analysisIntent = new Intent(this, GameAnalysisService.class);
         stopService(analysisIntent);
+        
+        // Stop bubble overlay service
+        Intent bubbleIntent = new Intent(this, BubbleOverlayService.class);
+        stopService(bubbleIntent);
+        
+        // Clear any remaining notifications
+        if (notificationTipManager != null) {
+            notificationTipManager.clearAllTips();
+        }
         
         updateServiceStatus(false);
     }

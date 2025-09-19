@@ -343,24 +343,26 @@ if [ ! -f "$DEBUG_KEYSTORE" ]; then
     echo "✓ Debug keystore created"
 fi
 
-# Sign the APK
+# Step 8: Align APK first (must be done before signing)
+echo "Aligning APK..."
+zipalign -f 4 $APK_DIR/app-debug-unsigned.apk $APK_DIR/app-debug-aligned.apk
+echo "✓ APK aligned"
+
+# Sign the APK (with proper v2/v3 signatures)
+echo "Signing APK..."
 apksigner sign \
     --ks $DEBUG_KEYSTORE \
     --ks-key-alias androiddebugkey \
     --ks-pass pass:android \
     --key-pass pass:android \
+    --v1-signing-enabled true \
+    --v2-signing-enabled true \
+    --v3-signing-enabled true \
     --min-sdk-version 24 \
     --out $APK_DIR/app-debug.apk \
-    $APK_DIR/app-debug-unsigned.apk
+    $APK_DIR/app-debug-aligned.apk
 
 echo "✓ APK signed"
-
-# Step 8: Align APK
-echo "Aligning APK..."
-zipalign -f 4 $APK_DIR/app-debug.apk $APK_DIR/app-debug-aligned.apk
-mv $APK_DIR/app-debug-aligned.apk $APK_DIR/app-debug.apk
-
-echo "✓ APK aligned"
 
 # Verify APK
 echo "Verifying APK..."
