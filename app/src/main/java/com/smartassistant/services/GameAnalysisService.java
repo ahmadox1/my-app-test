@@ -11,6 +11,8 @@ import android.util.Log;
 import com.smartassistant.ai.OpenCVManager;
 import com.smartassistant.ai.TensorFlowManager;
 import com.smartassistant.games.ClashRoyaleAnalyzer;
+import com.smartassistant.overlay.BubbleOverlayService;
+import com.smartassistant.overlay.NotificationTipManager;
 
 public class GameAnalysisService extends Service {
     private static final String TAG = "GameAnalysisService";
@@ -18,6 +20,7 @@ public class GameAnalysisService extends Service {
     private TensorFlowManager tensorFlowManager;
     private OpenCVManager openCVManager;
     private ClashRoyaleAnalyzer clashRoyaleAnalyzer;
+    private NotificationTipManager notificationTipManager;
     
     private Handler mainHandler;
     private Handler backgroundHandler;
@@ -47,6 +50,9 @@ public class GameAnalysisService extends Service {
             
             // Initialize game-specific analyzers
             clashRoyaleAnalyzer = new ClashRoyaleAnalyzer(tensorFlowManager, openCVManager);
+            
+            // Initialize notification tip manager
+            notificationTipManager = new NotificationTipManager(this);
             
             Log.d(TAG, "AI components initialized successfully");
         } catch (Exception e) {
@@ -185,12 +191,38 @@ public class GameAnalysisService extends Service {
     }
 
     private void notifySuggestion(String suggestion) {
+        // Send to bubble overlay service
+        Intent bubbleIntent = new Intent(this, BubbleOverlayService.class);
+        bubbleIntent.setAction(BubbleOverlayService.ACTION_SHOW_TIP);
+        bubbleIntent.putExtra(BubbleOverlayService.EXTRA_TIP_TEXT, suggestion);
+        bubbleIntent.putExtra(BubbleOverlayService.EXTRA_TIP_TYPE, determineTipType(suggestion));
+        startService(bubbleIntent);
+        
+        // Also send as notification (fallback)
+        if (notificationTipManager != null) {
+            notificationTipManager.showGameTip(suggestion, determineTipType(suggestion));
+        }
+        
         // Notify MainActivity about new suggestion
         Intent broadcastIntent = new Intent("SUGGESTION_READY");
         broadcastIntent.putExtra("suggestion", suggestion);
         sendBroadcast(broadcastIntent);
         
         Log.d(TAG, "Suggestion: " + suggestion);
+    }
+    
+    private String determineTipType(String suggestion) {
+        if (suggestion.contains("🔥") || suggestion.contains("هجوم")) {
+            return BubbleOverlayService.TIP_TYPE_ATTACK;
+        } else if (suggestion.contains("🛡️") || suggestion.contains("دفاع")) {
+            return BubbleOverlayService.TIP_TYPE_DEFENSE;
+        } else if (suggestion.contains("⚡") || suggestion.contains("إكسير")) {
+            return BubbleOverlayService.TIP_TYPE_ELIXIR;
+        } else if (suggestion.contains("⏰") || suggestion.contains("وقت")) {
+            return BubbleOverlayService.TIP_TYPE_TIME;
+        } else {
+            return BubbleOverlayService.TIP_TYPE_GENERAL;
+        }
     }
 
     public void processBitmap(Bitmap bitmap) {
