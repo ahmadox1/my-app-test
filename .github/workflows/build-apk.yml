@@ -1,9 +1,10 @@
-name: Android APK (Debug)
+name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -11,8 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Java 17
@@ -20,16 +22,60 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-          cache: gradle
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-      - name: Build debug APK
-        run: ./gradlew assembleDebug
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
 
-      - name: Upload APK artifact
+      - name: Setup Gradle wrapper
+        run: |
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+            gradle wrapper --gradle-version=8.4
+          fi
+
+      - name: Build debug APK with Gradle
+        run: |
+          echo "Building APK with Gradle..."
+          ./gradlew clean assembleDebug --stacktrace
+          
+      - name: Build APK with custom script (fallback)
+        if: failure()
+        run: |
+          echo "Gradle build failed, using custom build script..."
+          chmod +x ./build_apk.sh
+          ./build_apk.sh
+          
+      - name: Find generated APK
+        run: |
+          echo "Looking for generated APK files..."
+          find . -name "*.apk" -type f
+          
+      - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: app/build/outputs/apk/debug/*.apk
+          name: app-debug-apk
+          path: |
+            app/build/outputs/apk/debug/*.apk
+            *.apk
+          if-no-files-found: error
+          
+      - name: Upload build outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-outputs
+          path: |
+            app/build/outputs/
+            build_report.txt
+          if-no-files-found: ignore

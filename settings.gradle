@@ -3,8 +3,6 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
-        // احتياطي لو احتجت مكتبات من JitPack لاحقًا:
-        // maven { url 'https://jitpack.io' }
     }
 }
 
@@ -13,10 +11,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        // احتياطي:
-        // maven { url 'https://jitpack.io' }
+        maven { url "https://jitpack.io" }
     }
 }
 
-rootProject.name = "my-app-test"
-include(":app")
+rootProject.name = "Smart Gaming Assistant"
+include ':app'
