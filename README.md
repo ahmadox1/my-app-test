@@ -2,13 +2,26 @@
 
 مساعد ذكي متطور لتحليل شاشة الألعاب وتقديم اقتراحات استراتيجية في الوقت الفعلي.
 
-## 📦 تحميل التطبيق
-**ملف APK جاهز للتحميل!** 
-- 📥 [app-debug.apk](./app-debug.apk) - حجم الملف: 28KB
-- 📋 [تعليمات التحميل والتثبيت](./DOWNLOAD_APK_AR.md)
-- 📚 [تعليمات التثبيت التفصيلية](./APK_INSTRUCTIONS_AR.md)
+# Smart Gaming Assistant - مساعد الألعاب الذكي
 
-## الميزات الرئيسية
+## 🚀 Quick Start
+
+### 📦 Download APK (Ready to Install)
+**[⬇️ Download APK](./app-debug.apk)** - File Size: ~36KB
+
+**Or build from source:**
+
+```bash
+# Interactive build (Recommended)
+./local_build.sh
+
+# Quick build
+./local_build.sh build
+```
+
+**📋 [Complete Build Instructions](./BUILD_INSTRUCTIONS.md)**
+
+## ✨ Features
 
 - 📱 **تحليل الشاشة الذكي**: يحلل محتوى الشاشة في الوقت الفعلي
 - 🎮 **دعم متعدد الألعاب**: متخصص في ألعاب الاستراتيجية مثل كلاش رويال
@@ -56,7 +69,28 @@
 4. **الاقتراحات**: استقبل نصائح ذكية في الوقت المناسب
 5. **التعلم**: يتحسن أداء المساعد مع الاستخدام
 
-## البنية التقنية
+## 🔧 Development & Building
+
+### Local Development
+```bash
+# Interactive build script
+./local_build.sh
+
+# Direct Gradle build
+./gradlew assembleDebug
+
+# Custom offline build
+./build_apk.sh
+```
+
+### GitHub Actions
+- **Automatic builds** on push to main/develop
+- **Release workflow** on version tags
+- **APK artifacts** uploaded automatically
+
+**📖 [Complete Build Documentation](./BUILD_INSTRUCTIONS.md)**
+
+## 🏗️ Project Structure
 
 ```
 SmartGamingAssistant/
