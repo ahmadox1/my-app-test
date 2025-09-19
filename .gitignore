@@ -1,5 +1,5 @@
 # Built application files
-*.apk
+# *.apk  # Allow APK files to be tracked for releases
 *.aar
 *.ap_
 *.aab

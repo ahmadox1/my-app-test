@@ -1,96 +1,193 @@
-# Smart Gaming Assistant - مساعد الألعاب الذكي
+# Smart Gaming Assistant 🎮
 
-مساعد ذكي متطور لتحليل شاشة الألعاب وتقديم اقتراحات استراتيجية في الوقت الفعلي.
+مساعد الألعاب الذكي - تطبيق Android لتحليل الألعاب وتقديم النصائح الذكية
 
-## 📦 تحميل التطبيق
-**ملف APK جاهز للتحميل!** 
-- 📥 [app-debug.apk](./app-debug.apk) - حجم الملف: 28KB
-- 📋 [تعليمات التحميل والتثبيت](./DOWNLOAD_APK_AR.md)
-- 📚 [تعليمات التثبيت التفصيلية](./APK_INSTRUCTIONS_AR.md)
+## 📱 About / حول المشروع
 
-## الميزات الرئيسية
+Smart Gaming Assistant is an Android application that provides intelligent gaming tips and analysis. The app uses simplified implementations to ensure reliable building without external dependencies.
 
-- 📱 **تحليل الشاشة الذكي**: يحلل محتوى الشاشة في الوقت الفعلي
-- 🎮 **دعم متعدد الألعاب**: متخصص في ألعاب الاستراتيجية مثل كلاش رويال
-- 🧠 **ذكاء اصطناعي مفتوح المصدر**: يستخدم نماذج TensorFlow Lite و OpenCV
-- ⚡ **أداء محلي**: يعمل بالكامل على الجهاز دون الحاجة للإنترنت
-- 🔒 **خصوصية كاملة**: لا يرسل أي بيانات خارج الجهاز
+مساعد الألعاب الذكي هو تطبيق أندرويد يوفر نصائح ذكية وتحليل للألعاب. يستخدم التطبيق تطبيقات مبسطة لضمان البناء بشكل موثوق بدون تبعيات خارجية.
 
-## الألعاب المدعومة
+## 🚀 Quick Start / بداية سريعة
 
-### Clash Royale - كلاش رويال
-- تحليل ديك الخصم وتقديم اقتراحات مضادة
-- اقتراح أفضل استراتيجيات الهجوم والدفاع
-- تتبع دورة البطاقات وتوقع الحركات التالية
-- نصائح لإدارة الإكسير بكفاءة
+### Prerequisites / المتطلبات
+- Java 17+
+- Android SDK (API 24+)
+- Gradle (handled by wrapper)
 
-## التقنيات المستخدمة
+### Building Locally / البناء محليًا
 
-- **Android SDK**: منصة التطوير الأساسية
-- **TensorFlow Lite**: لنماذج التعلم الآلي المحلية
-- **OpenCV**: لمعالجة الصور وتحليل الشاشة
-- **MediaProjection API**: لالتقاط محتوى الشاشة
-- **Accessibility Service**: للوصول لمحتوى التطبيقات
+**Method 1: Using the build script (Recommended)**
+```bash
+# Auto-detect best build method
+./build-local.sh
 
-## متطلبات النظام
-
-- Android 7.0 (API level 24) أو أحدث
-- 2GB RAM أو أكثر
-- مساحة تخزين: 100MB
-
-## التثبيت والتشغيل
-
-1. قم بتنزيل ملف APK من releases
-2. فعّل "المصادر غير المعروفة" في إعدادات الأمان
-3. قم بتثبيت التطبيق
-4. امنح الصلاحيات المطلوبة:
-   - صلاحية التقاط الشاشة
-   - صلاحية الوصول للتطبيقات (Accessibility)
-5. افتح اللعبة المدعومة وابدأ اللعب!
-
-## كيفية الاستخدام
-
-1. **التشغيل**: افتح المساعد الذكي
-2. **الربط**: اربط التطبيق بلعبتك المفضلة
-3. **التحليل**: سيبدأ المساعد بتحليل الشاشة تلقائياً
-4. **الاقتراحات**: استقبل نصائح ذكية في الوقت المناسب
-5. **التعلم**: يتحسن أداء المساعد مع الاستخدام
-
-## البنية التقنية
-
-```
-SmartGamingAssistant/
-├── app/src/main/
-│   ├── java/com/smartassistant/
-│   │   ├── MainActivity.java
-│   │   ├── services/
-│   │   │   ├── ScreenCaptureService.java
-│   │   │   └── GameAnalysisService.java
-│   │   ├── ai/
-│   │   │   ├── TensorFlowManager.java
-│   │   │   └── OpenCVManager.java
-│   │   └── games/
-│   │       └── ClashRoyaleAnalyzer.java
-│   ├── assets/
-│   │   └── models/
-│   │       ├── clash_royale_model.tflite
-│   │       └── card_detection_model.tflite
-│   └── res/
-└── README.md
+# Or specify build method
+./build-local.sh gradle    # Force Gradle build
+./build-local.sh custom    # Force custom script build
+./build-local.sh clean     # Clean artifacts
+./build-local.sh check     # Check environment
 ```
 
-## المساهمة في التطوير
+**Method 2: Direct Gradle build**
+```bash
+./gradlew assembleDebug
+```
 
-نرحب بالمساهمات! يمكنك:
-- إضافة دعم لألعاب جديدة
-- تحسين دقة النماذج
-- تطوير الواجهات
-- إصلاح الأخطاء
+**Method 3: Custom build script**
+```bash
+./build_apk.sh
+```
 
-## الترخيص
+### GitHub Actions / إجراءات GitHub
 
-هذا المشروع مفتوح المصدر تحت ترخيص MIT.
+The project includes a comprehensive CI/CD pipeline that:
+- ✅ Builds APK using multiple methods (Gradle + fallback)
+- ✅ Creates releases automatically on main branch pushes
+- ✅ Uploads build artifacts
+- ✅ Validates builds and provides detailed reports
+
+يتضمن المشروع خط إنتاج CI/CD شامل يقوم بـ:
+- ✅ بناء APK باستخدام طرق متعددة
+- ✅ إنشاء إصدارات تلقائيًا عند الدفع للفرع الرئيسي
+- ✅ رفع ملفات البناء
+- ✅ التحقق من صحة البناء وتوفير تقارير مفصلة
+
+## 📦 APK Installation / تثبيت APK
+
+### Download / التحميل
+- **Latest Release**: Check [Releases](../../releases) page
+- **Development Builds**: Available in [Actions](../../actions) artifacts
+
+### Installation Steps / خطوات التثبيت
+1. Enable "Unknown Sources" in Android settings / فعّل "مصادر غير معروفة" في إعدادات أندرويد
+2. Download the APK file / حمّل ملف APK
+3. Install using one of these methods / ثبّت باستخدام إحدى هذه الطرق:
+   ```bash
+   # Via ADB
+   adb install app-debug.apk
+   
+   # Or tap the APK file on your device
+   # أو انقر على ملف APK في جهازك
+   ```
+
+## 🛠️ Project Structure / هيكل المشروع
+
+```
+my-app-test/
+├── .github/workflows/          # GitHub Actions CI/CD
+│   └── build-apk.yml          # Main build workflow
+├── app/                       # Android app module
+│   ├── src/main/
+│   │   ├── java/              # Java source files
+│   │   ├── res/               # Android resources
+│   │   └── AndroidManifest.xml
+│   └── build.gradle           # App-level build config
+├── gradle/wrapper/            # Gradle wrapper files
+├── build.gradle               # Project-level build config
+├── settings.gradle            # Gradle settings
+├── gradle.properties          # Gradle properties
+├── build-local.sh            # Local development build script
+├── build_apk.sh              # Custom APK build script
+└── README.md                 # This file
+```
+
+## 🔧 Build Methods / طرق البناء
+
+### 1. Gradle Build (Primary)
+- Standard Android Gradle Plugin build
+- Handles dependencies automatically
+- Generates optimized APK
+- Full Android toolchain integration
+
+### 2. Custom Script Build (Fallback)
+- Uses AAPT2 and build tools directly  
+- Works without Gradle in CI environments
+- Simplified dependency handling
+- Offline-capable build process
+
+### 3. Local Development Script
+- Intelligent build method detection
+- Environment validation
+- Colored output and progress reporting
+- Multiple build options
+
+## 🎯 Features / المميزات
+
+### Current Implementation / التطبيق الحالي
+- ✅ Basic UI with Arabic support / واجهة أساسية بدعم العربية
+- ✅ Service management buttons / أزرار إدارة الخدمة
+- ✅ System status display / عرض حالة النظام
+- ✅ Clean material design / تصميم ماتيريال نظيف
+
+### Simplified Components / المكونات المبسطة
+- `ModelDownloadManager`: Mock implementation / تطبيق وهمي
+- `TensorFlowManager`: Simplified AI logic / منطق ذكي مبسط
+- `OpenCVManager`: Basic image processing / معالجة صور أساسية
+
+## 🏗️ Development / التطوير
+
+### Local Development Setup / إعداد التطوير المحلي
+```bash
+# Clone repository
+git clone https://github.com/ahmadox1/my-app-test.git
+cd my-app-test
+
+# Check environment
+./build-local.sh check
+
+# Build project
+./build-local.sh
+
+# Clean build
+./build-local.sh clean
+```
+
+### Adding Features / إضافة مميزات
+1. Modify source files in `app/src/main/java/`
+2. Update resources in `app/src/main/res/`  
+3. Test builds locally with `./build-local.sh`
+4. Commit and push to trigger CI/CD
+
+### Testing / الاختبار
+```bash
+# Run unit tests
+./gradlew test
+
+# Run instrumentation tests
+./gradlew connectedAndroidTest
+```
+
+## 📊 Build Status / حالة البناء
+
+[![Android APK Build & Release](../../actions/workflows/build-apk.yml/badge.svg)](../../actions/workflows/build-apk.yml)
+
+## 🤝 Contributing / المساهمة
+
+1. Fork the repository / انسخ المشروع
+2. Create feature branch / أنشئ فرع مميزة
+3. Make changes / اعمل تغييرات
+4. Test locally / اختبر محليًا
+5. Submit pull request / أرسل طلب دمج
+
+## 📄 License / الترخيص
+
+This project is open source. Please check the license file for details.
+
+هذا المشروع مفتوح المصدر. يرجى مراجعة ملف الترخيص للتفاصيل.
 
 ---
 
-**ملاحظة**: هذا التطبيق مخصص للأغراض التعليمية والترفيهية فقط. استخدمه بمسؤولية ووفقاً لشروط الألعاب المختلفة.
+**Build Info:**
+- Min SDK: 24 (Android 7.0)
+- Target SDK: 34 (Android 14)  
+- Java Version: 17
+- Gradle Version: 8.4
+- Android Gradle Plugin: 8.1.4
+
+**معلومات البناء:**
+- أقل إصدار: 24 (أندرويد 7.0)
+- الإصدار المستهدف: 34 (أندرويد 14)
+- إصدار جافا: 17
+- إصدار جرادل: 8.4
+- إضافة أندرويد جرادل: 8.1.4

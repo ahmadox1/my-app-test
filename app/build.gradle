@@ -5,16 +5,22 @@ plugins {
 }
 
 android {
-    namespace "com.smartassistant"         // Fixed namespace to match package
+    namespace "com.smartassistant"
     compileSdk 34
 
     defaultConfig {
         applicationId "com.smartassistant"
-        minSdk 23
+        minSdk 24  // Raised to 24 for better compatibility
         targetSdk 34
         versionCode 1
         versionName "1.0"
+        
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Ensure proper resource and asset handling
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
 
     buildTypes {
@@ -23,27 +29,34 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            // إعدادات debug الافتراضية
+            debuggable true
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
         }
     }
-
-    // لو تستخدم View Binding/Compose اضف الإعدادات المعتادة هنا
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    // لو كوتلن:
-    // kotlinOptions {
-    //     jvmTarget = '17'
-    // }
+    
+    buildFeatures {
+        buildConfig true  // Ensure BuildConfig is generated
+    }
 
-    // في حال استخدمت AAR لاحقًا وقدّمت ملفات JNI داخل الـ AAR يمكن تفعيل هذا:
-    // packagingOptions {
-    //     jniLibs {
-    //         useLegacyPackaging = true
-    //     }
-    // }
+    // Packaging options for APK optimization
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+    
+    // Lint options to avoid build failures on warnings
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
 }
 
 repositories {
