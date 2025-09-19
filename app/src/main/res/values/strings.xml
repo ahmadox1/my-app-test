@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">مساعد الألعاب الذكي</string>
+    <string name="welcome_title">مرحباً بك في مساعد الألعاب الذكي</string>
+    <string name="welcome_subtitle">تحليل ذكي للألعاب واقتراحات استراتيجية في الوقت الفعلي</string>
+    
+    <!-- Permissions -->
+    <string name="permission_screen_capture">صلاحية التقاط الشاشة</string>
+    <string name="permission_accessibility">صلاحية الوصول للتطبيقات</string>
+    <string name="permission_overlay">صلاحية العرض فوق التطبيقات</string>
+    
+    <!-- Games -->
+    <string name="clash_royale">كلاش رويال</string>
+    <string name="game_not_detected">لم يتم اكتشاف أي لعبة مدعومة</string>
+    
+    <!-- Analysis -->
+    <string name="analyzing">يتم التحليل...</string>
+    <string name="analysis_ready">التحليل جاهز</string>
+    <string name="suggestion_attack">اقتراح هجومي</string>
+    <string name="suggestion_defense">اقتراح دفاعي</string>
+    
+    <!-- Buttons -->
+    <string name="start_service">بدء الخدمة</string>
+    <string name="stop_service">إيقاف الخدمة</string>
+    <string name="settings">الإعدادات</string>
+    <string name="about">حول التطبيق</string>
+    
+    <!-- Accessibility -->
+    <string name="accessibility_service_description">يسمح للمساعد الذكي بقراءة محتوى الشاشة وتحليل الألعاب</string>
+</resources>
