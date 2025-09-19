@@ -27,4 +27,11 @@
     
     <!-- Accessibility -->
     <string name="accessibility_service_description">يسمح للمساعد الذكي بقراءة محتوى الشاشة وتحليل الألعاب</string>
+    
+    <!-- Additional UI strings -->
+    <string name="service_running">الخدمة تعمل</string>
+    <string name="service_stopped">الخدمة متوقفة</string>
+    <string name="enable_accessibility">تفعيل خدمة الوصول</string>
+    <string name="no_game_detected">لم يتم اكتشاف أي لعبة</string>
+    <string name="no_suggestions">لا توجد اقتراحات حالياً</string>
 </resources>
