@@ -4,30 +4,96 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.LoaderCallbackInterface;
-import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.objdetect.CascadeClassifier;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * OpenCV manager for computer vision tasks
+ * OpenCV manager - simplified for offline builds
+ * This version provides stub functionality without requiring OpenCV dependencies
  */
 public class OpenCVManager {
     private static final String TAG = "OpenCVManager";
     
+    private static OpenCVManager instance;
     private Context context;
-    private boolean isOpenCVInitialized = false;
+    private boolean isInitialized = false;
+    
+    private OpenCVManager(Context context) {
+        this.context = context;
+    }
+    
+    public static OpenCVManager getInstance(Context context) {
+        if (instance == null) {
+            instance = new OpenCVManager(context);
+        }
+        return instance;
+    }
+    
+    public static OpenCVManager getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("OpenCVManager must be initialized with context first");
+        }
+        return instance;
+    }
+    
+    public void initialize() {
+        Log.d(TAG, "OpenCV Manager initialized (stub implementation)");
+        isInitialized = true;
+    }
+    
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+    
+    public Bitmap processImage(Bitmap inputBitmap) {
+        if (inputBitmap == null) {
+            return null;
+        }
+        
+        Log.d(TAG, "Processing image (stub): " + inputBitmap.getWidth() + "x" + inputBitmap.getHeight());
+        
+        // For stub implementation, just return the original bitmap
+        return inputBitmap;
+    }
+    
+    public List<Object> detectObjects(Bitmap bitmap) {
+        Log.d(TAG, "Detecting objects (stub implementation)");
+        
+        // Return empty list for stub
+        return new ArrayList<>();
+    }
+    
+    public double[] calculateImageStats(Bitmap bitmap) {
+        if (bitmap == null) {
+            return new double[]{0.0, 0.0, 0.0};
+        }
+        
+        Log.d(TAG, "Calculating image statistics (stub)");
+        
+        // Return dummy statistics
+        return new double[]{
+            bitmap.getWidth() * 0.1,   // Mean value simulation
+            bitmap.getHeight() * 0.05, // Standard deviation simulation  
+            bitmap.getWidth() * bitmap.getHeight() * 0.001 // Variance simulation
+        };
+    }
+    
+    public Bitmap preprocessImage(Bitmap bitmap, int targetWidth, int targetHeight) {
+        if (bitmap == null) {
+            return null;
+        }
+        
+        Log.d(TAG, "Preprocessing image (stub): " + targetWidth + "x" + targetHeight);
+        
+        // For stub implementation, use Android's basic scaling
+        return Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true);
+    }
+    
+    public void cleanup() {
+        Log.d(TAG, "OpenCV Manager cleaned up");
+        isInitialized = false;
+    }
+}
     
     public OpenCVManager(Context context) {
         this.context = context;
