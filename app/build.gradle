@@ -1,19 +1,19 @@
 plugins {
     id 'com.android.application'
+    // لو مشروعك كوتلن، فعّل السطر التالي:
+    // id 'org.jetbrains.kotlin.android'
 }
 
 android {
-    namespace 'com.smartassistant'
-    compileSdk 34
+    namespace "com.example.myapptest"      // بدّلها لو عندك Namespace مختلف
+    compileSdk 34                          // غيّرها وفق مشروعك إن لزم
 
     defaultConfig {
-        applicationId "com.smartassistant"
-        minSdk 24
+        applicationId "com.smartassistant" // بدّلها إلى باكدج تطبيقك
+        minSdk 23
         targetSdk 34
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -21,36 +21,46 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-    }
-    
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        debug {
+            // إعدادات debug الافتراضية
+        }
     }
 
-    aaptOptions {
-        noCompress "tflite"
+    // لو تستخدم View Binding/Compose اضف الإعدادات المعتادة هنا
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
+    // لو كوتلن:
+    // kotlinOptions {
+    //     jvmTarget = '17'
+    // }
+
+    // في حال استخدمت AAR لاحقًا وقدّمت ملفات JNI داخل الـ AAR يمكن تفعيل هذا:
+    // packagingOptions {
+    //     jniLibs {
+    //         useLegacyPackaging = true
+    //     }
+    // }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    // احتياطي لو احتجت:
+    // maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    
-    // TensorFlow Lite
-    implementation 'org.tensorflow:tensorflow-lite:2.14.0'
-    implementation 'org.tensorflow:tensorflow-lite-gpu:2.14.0'
-    implementation 'org.tensorflow:tensorflow-lite-support:0.4.4'
-    
-    // OpenCV
-    implementation 'org.opencv:opencv-android:4.8.0'
-    
-    // Permissions and utilities
-    implementation 'androidx.core:core:1.12.0'
-    implementation 'androidx.lifecycle:lifecycle-service:2.7.0'
-    
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+
+    // ====== OpenCV (الحل للمشكلة) ======
+    // استخدم التنسيق الرسمي الموجود على Maven Central:
+    implementation 'org.opencv:opencv:4.12.0'
+    // ====================================
+
+    // لو عندك مكتبات أخرى أضفها هنا (Firebase, Retrofit, …)
 }
