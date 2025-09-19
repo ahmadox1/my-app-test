@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace ""com.smartassistant"      // بدّلها لو عندك Namespace مختلف
+    namespace "com.example.myapptest"      // بدّلها لو عندك Namespace مختلف
     compileSdk 34                          // غيّرها وفق مشروعك إن لزم
 
     defaultConfig {
-        applicationId "com.example.myapptest" // بدّلها إلى باكدج تطبيقك
+        applicationId "com.smartassistant" // بدّلها إلى باكدج تطبيقك
         minSdk 23
         targetSdk 34
         versionCode 1
