@@ -20,9 +20,33 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# TensorFlow Lite
--keep class org.tensorflow.lite.** { *; }
--keep class org.tensorflow.lite.support.** { *; }
+# Keep Hilt classes
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep class * extends dagger.hilt.android.lifecycle.HiltViewModel { *; }
 
-# OpenCV
--keep class org.opencv.** { *; }
+# Keep ML Kit classes
+-keep class com.google.mlkit.** { *; }
+
+# Keep serialization classes
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+-keepclassmembers class kotlinx.serialization.json.** {
+    *** Companion;
+}
+-keepclasseswithmembers class kotlinx.serialization.json.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+-keep,includedescriptorclasses class com.ahmadox.smartcoach.**$$serializer { *; }
+-keepclassmembers class com.ahmadox.smartcoach.** {
+    *** Companion;
+}
+-keepclasseswithmembers class com.ahmadox.smartcoach.** {
+    kotlinx.serialization.KSerializer serializer(...);
+}
+
+# Keep accessibility service
+-keep class com.ahmadox.smartcoach.service.SmartCoachAccessibilityService { *; }
+
+# Keep data classes
+-keep class com.ahmadox.smartcoach.data.model.** { *; }

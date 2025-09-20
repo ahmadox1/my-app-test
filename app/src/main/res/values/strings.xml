@@ -1,37 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">مساعد الألعاب الذكي</string>
-    <string name="welcome_title">مرحباً بك في مساعد الألعاب الذكي</string>
-    <string name="welcome_subtitle">تحليل ذكي للألعاب واقتراحات استراتيجية في الوقت الفعلي</string>
+    <string name="app_name">Smart Coach</string>
+    <string name="accessibility_service_description">مساعد ذكي لتحليل الألعاب وتقديم الاقتراحات الاستراتيجية باستخدام الذكاء الاصطناعي المحلي.</string>
     
-    <!-- Permissions -->
-    <string name="permission_screen_capture">صلاحية التقاط الشاشة</string>
-    <string name="permission_accessibility">صلاحية الوصول للتطبيقات</string>
-    <string name="permission_overlay">صلاحية العرض فوق التطبيقات</string>
-    
-    <!-- Games -->
-    <string name="clash_royale">كلاش رويال</string>
-    <string name="game_not_detected">لم يتم اكتشاف أي لعبة مدعومة</string>
-    
-    <!-- Analysis -->
-    <string name="analyzing">يتم التحليل...</string>
-    <string name="analysis_ready">التحليل جاهز</string>
-    <string name="suggestion_attack">اقتراح هجومي</string>
-    <string name="suggestion_defense">اقتراح دفاعي</string>
-    
-    <!-- Buttons -->
+    <!-- Main UI -->
+    <string name="main_title">مساعد الألعاب الذكي</string>
+    <string name="service_status">حالة الخدمة</string>
+    <string name="service_running">تعمل</string>
+    <string name="service_stopped">متوقفة</string>
     <string name="start_service">بدء الخدمة</string>
     <string name="stop_service">إيقاف الخدمة</string>
     <string name="settings">الإعدادات</string>
-    <string name="about">حول التطبيق</string>
+    <string name="download_models">تحميل النماذج</string>
     
-    <!-- Accessibility -->
-    <string name="accessibility_service_description">يسمح للمساعد الذكي بقراءة محتوى الشاشة وتحليل الألعاب</string>
+    <!-- Permissions -->
+    <string name="permission_accessibility_title">صلاحية الوصول</string>
+    <string name="permission_accessibility_description">مطلوبة لقراءة محتوى الألعاب</string>
+    <string name="permission_overlay_title">العرض فوق التطبيقات</string>
+    <string name="permission_overlay_description">مطلوبة لعرض الاقتراحات</string>
+    <string name="permission_screen_capture_title">التقاط الشاشة</string>
+    <string name="permission_screen_capture_description">مطلوبة لتحليل اللعبة</string>
     
-    <!-- Additional UI strings -->
-    <string name="service_running">الخدمة تعمل</string>
-    <string name="service_stopped">الخدمة متوقفة</string>
-    <string name="enable_accessibility">تفعيل خدمة الوصول</string>
-    <string name="no_game_detected">لم يتم اكتشاف أي لعبة</string>
-    <string name="no_suggestions">لا توجد اقتراحات حالياً</string>
+    <!-- Strategy -->
+    <string name="strategy_attack">هجوم</string>
+    <string name="strategy_defense">دفاع</string>
+    <string name="strategy_wait">انتظار</string>
+    <string name="confidence_high">ثقة عالية</string>
+    <string name="confidence_medium">ثقة متوسطة</string>
+    <string name="confidence_low">ثقة منخفضة</string>
+    
+    <!-- Models -->
+    <string name="model_downloading">جاري تحميل النموذج...</string>
+    <string name="model_downloaded">تم تحميل النموذج</string>
+    <string name="model_failed">فشل تحميل النموذج</string>
+    <string name="model_quality_high">جودة عالية</string>
+    <string name="model_quality_medium">جودة متوسطة</string>
+    <string name="model_quality_low">جودة منخفضة</string>
+    
+    <!-- Privacy -->
+    <string name="privacy_notice_title">إشعار الخصوصية</string>
+    <string name="privacy_notice_description">جميع البيانات تتم معالجتها محلياً على جهازك. لا يتم إرسال أي بيانات للخارج.</string>
+    <string name="accept">موافق</string>
+    <string name="decline">رفض</string>
+    
+    <!-- Notifications -->
+    <string name="notification_channel_name">Smart Coach</string>
+    <string name="notification_channel_description">إشعارات الاقتراحات الاستراتيجية</string>
+    <string name="notification_service_running">الخدمة تعمل - جاري التحليل</string>
+    <string name="notification_suggestion_title">اقتراح استراتيجي</string>
+    
+    <!-- Errors -->
+    <string name="error_permission_required">الصلاحية مطلوبة</string>
+    <string name="error_service_failed">فشل بدء الخدمة</string>
+    <string name="error_model_not_found">النموذج غير موجود</string>
 </resources>

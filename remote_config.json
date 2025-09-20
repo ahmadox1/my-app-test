@@ -1,0 +1,35 @@
+{
+  "model_url": "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.q4_0.gguf",
+  "model_sha256": "dummy_sha256_hash_for_testing_purposes",
+  "model_size_mb": 3800,
+  "model_quality": "medium",
+  "models": {
+    "high": {
+      "url": "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.q8_0.gguf",
+      "sha256": "dummy_high_quality_hash",
+      "size_mb": 7200
+    },
+    "medium": {
+      "url": "https://huggingface.co/TheBloke/Llama-2-7B-Chat-GGUF/resolve/main/llama-2-7b-chat.q4_0.gguf",
+      "sha256": "dummy_medium_quality_hash", 
+      "size_mb": 3800
+    },
+    "low": {
+      "url": "https://huggingface.co/microsoft/DialoGPT-small/resolve/main/pytorch_model.bin",
+      "sha256": "dummy_low_quality_hash",
+      "size_mb": 117
+    }
+  },
+  "features": {
+    "enable_overlay": true,
+    "analysis_level": "accurate",
+    "auto_download": true,
+    "checksum_verification": true
+  },
+  "supported_games": [
+    "com.supercell.clashroyale",
+    "com.supercell.clashofclans"
+  ],
+  "update_interval_hours": 24,
+  "min_app_version": "1.0.0"
+}
