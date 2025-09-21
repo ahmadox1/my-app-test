@@ -1,0 +1,16 @@
+[
+  {
+    "id": "vosk-en-small",
+    "name": "Vosk Small English",
+    "sizeBytes": 50000000,
+    "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "url": "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
+  },
+  {
+    "id": "vosk-ar-small",
+    "name": "Vosk Small Arabic",
+    "sizeBytes": 52000000,
+    "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "url": "https://alphacephei.com/vosk/models/vosk-model-small-ar-0.22.zip"
+  }
+]
