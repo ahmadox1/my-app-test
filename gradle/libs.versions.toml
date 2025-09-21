@@ -1,27 +1,26 @@
 [versions]
-agp = "8.1.4"
-kotlin = "2.0.21"
-compose-bom = "2024.09.02"
-compose-compiler = "1.5.15"
-androidx-core = "1.13.1"
-androidx-activity-compose = "1.9.3"
-androidx-lifecycle-runtime = "2.8.6"
-androidx-navigation = "2.8.1"
-androidx-work = "2.9.1"
-androidx-datastore = "1.1.1"
+agp = "7.2.2"
+kotlin = "1.7.10"
+compose-bom = "2022.10.00"
+compose-compiler = "1.3.2"
+androidx-core = "1.8.0"
+androidx-activity-compose = "1.5.1"
+androidx-lifecycle-runtime = "2.5.1"
+androidx-navigation = "2.5.1"
+androidx-work = "2.7.1"
+androidx-datastore = "1.0.0"
 androidx-startup = "1.1.1"
-coroutines = "1.9.0"
+coroutines = "1.6.4"
 mlkit-text-recognition = "16.0.0"
 mlkit-text-recognition-cjk = "16.0.0"
 vosk-android = "0.3.45"
 tess-two = "9.1.0"
-coil = "2.6.0"
+coil = "2.2.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
@@ -44,8 +43,6 @@ mlkit-text-recognition = { module = "com.google.mlkit:text-recognition", version
 mlkit-text-recognition-chinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "mlkit-text-recognition-cjk" }
 mlkit-text-recognition-devanagari = { module = "com.google.mlkit:text-recognition-devanagari", version.ref = "mlkit-text-recognition-cjk" }
 mlkit-text-recognition-korean = { module = "com.google.mlkit:text-recognition-korean", version.ref = "mlkit-text-recognition-cjk" }
-# Tess-two / Vosk aliases
 tess-two = { module = "com.googlecode.tesseract.android:tess-two", version.ref = "tess-two" }
 vosk-android = { module = "ai.vosk:vosk-android", version.ref = "vosk-android" }
-
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
