@@ -1,0 +1,3 @@
+<resources>
+    <string name="accessibility_service_description">Provides on-device descriptions of visible UI to ScreenTalk.</string>
+</resources>

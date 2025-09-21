@@ -1,16 +1,16 @@
 [
   {
-    "id": "tinyllama-q4",
-    "name": "TinyLlama 1.1B Chat Q4_K_M",
-    "sizeBytes": 1360000000,
-    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-    "url": "https://huggingface.co/jzhang38/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/TinyLlama-1.1B-Chat-v1.0.Q4_K_M.gguf"
+    "id": "small",
+    "name": "TinyLlama 1.1B Chat (q4_k_m)",
+    "size": "1.1B",
+    "url": "https://example.com/tinyllama-q4_k_m.gguf",
+    "sha256": "CHANGE-ME"
   },
   {
-    "id": "mistral-7b-q4",
-    "name": "Mistral 7B Instruct Q4_K_M",
-    "sizeBytes": 4300000000,
-    "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
-    "url": "https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF/resolve/main/mistral-7b-instruct-v0.2.Q4_K_M.gguf"
+    "id": "medium",
+    "name": "Mistral 7B Instruct (q4_k_m)",
+    "size": "7B",
+    "url": "https://example.com/mistral-7b-instruct-q4_k_m.gguf",
+    "sha256": "CHANGE-ME"
   }
 ]

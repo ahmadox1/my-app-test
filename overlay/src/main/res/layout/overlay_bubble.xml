@@ -5,4 +5,5 @@
     android:layout_height="56dp"
     android:background="@drawable/bubble_background"
     android:padding="12dp"
-    android:src="@android:drawable/ic_btn_speak_now" />
+    android:src="@drawable/ic_overlay_bubble"
+    android:contentDescription="@string/overlay_bubble_content_description" />

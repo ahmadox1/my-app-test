@@ -7,36 +7,57 @@ import ai.screentalk.common.Logger
 import ai.screentalk.screen.ScreenContextBuilder
 
 class ScreenReaderService : AccessibilityService() {
-
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        val root = rootInActiveWindow ?: return
-        val lines = mutableListOf<String>()
-        collectText(root, lines)
-        root.recycle()
-        val focusedNode = event?.source?.let { node ->
-            val focusedText = node.text?.toString().orEmpty()
-            node.recycle()
-            focusedText
-        } ?: ""
-        val summary = lines.joinToString(separator = " • ") { it.trim() }
-        ScreenContextBuilder.updateAccessibility(summary, focusedNode)
-        ScreenContextBuilder.updateApp(event?.packageName?.toString(), event?.className?.toString())
+        event ?: return
+        val packageName = event.packageName?.toString()
+        val className = event.className?.toString()
+        if (!packageName.isNullOrEmpty()) {
+            ScreenContextBuilder.updateApp(packageName, className)
+        }
+
+        val source = event.source
+        val root = rootInActiveWindow ?: source ?: return
+        val textFragments = mutableListOf<String>()
+        collectNodeText(root, textFragments)
+        val focused = findFocusedText(root)
+        val mergedText = textFragments.joinToString(separator = " \u2022 ")
+        ScreenContextBuilder.updateAccessibility(mergedText, focused, packageName)
+        if (root !== source) {
+            root.recycle()
+        }
+        source?.recycle()
     }
 
     override fun onInterrupt() {
-        Logger.w("Accessibility service interrupted")
+        Logger.d("Accessibility service interrupted")
     }
 
-    private fun collectText(node: AccessibilityNodeInfo?, output: MutableList<String>) {
-        if (node == null) return
-        val text = node.text?.toString().orEmpty()
-        val contentDesc = node.contentDescription?.toString().orEmpty()
-        if (text.isNotBlank()) output += text
-        if (contentDesc.isNotBlank() && contentDesc != text) output += contentDesc
-        for (i in 0 until node.childCount) {
-            val child = node.getChild(i) ?: continue
-            collectText(child, output)
-            child.recycle()
+    private fun collectNodeText(node: AccessibilityNodeInfo?, accumulator: MutableList<String>) {
+        node ?: return
+        val label = buildString {
+            node.text?.toString()?.takeIf { it.isNotBlank() }?.let { append(it) }
+            node.contentDescription?.toString()?.takeIf { it.isNotBlank() }?.let {
+                if (isNotEmpty()) append(' ')
+                append(it)
+            }
+        }.trim()
+        if (label.isNotEmpty()) {
+            accumulator += label
         }
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i)
+            collectNodeText(child, accumulator)
+            child?.recycle()
+        }
+    }
+
+    private fun findFocusedText(node: AccessibilityNodeInfo?): String? {
+        node ?: return null
+        val focused = node.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+            ?: node.findFocus(AccessibilityNodeInfo.FOCUS_ACCESSIBILITY)
+        val text = focused?.text?.toString()?.takeIf { it.isNotBlank() }
+            ?: focused?.contentDescription?.toString()?.takeIf { it.isNotBlank() }
+        focused?.recycle()
+        return text
     }
 }

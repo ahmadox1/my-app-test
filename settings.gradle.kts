@@ -15,10 +15,8 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "ScreenTalk"
-include(
-    ":app",
-    ":overlay",
-    ":screen",
-    ":core-ml",
-    ":common"
-)
+include(":app")
+include(":common")
+include(":core-ml")
+include(":screen")
+include(":overlay")

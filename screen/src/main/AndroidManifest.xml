@@ -1,16 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest package="ai.screentalk.screen">
-
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
         <service
             android:name="ai.screentalk.screen.ScreenCaptureService"
             android:exported="false"
-            android:foregroundServiceType="mediaProjection|microphone" />
-
+            android:foregroundServiceType="mediaProjection"
+            android:stopWithTask="false" />
         <service
             android:name="ai.screentalk.screen.accessibility.ScreenReaderService"
             android:exported="false"
@@ -18,7 +12,6 @@
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
-
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/screen_reader_config" />

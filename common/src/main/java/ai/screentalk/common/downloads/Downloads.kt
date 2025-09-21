@@ -1,122 +1,156 @@
 package ai.screentalk.common.downloads
 
 import android.content.Context
-import androidx.work.BackoffPolicy
-import androidx.work.Constraints
-import androidx.work.CoroutineWorker
-import androidx.work.ExistingWorkPolicy
-import androidx.work.ForegroundInfo
-import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import androidx.work.WorkerParameters
-import androidx.work.workDataOf
-import ai.screentalk.common.FileUtils
+import ai.screentalk.common.AppResult
+import ai.screentalk.common.Files
 import ai.screentalk.common.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
-import java.util.concurrent.TimeUnit
+import java.security.MessageDigest
+import kotlin.io.DEFAULT_BUFFER_SIZE
 
-private const val KEY_URL = "url"
-private const val KEY_TARGET = "target"
-private const val KEY_SHA = "sha"
-private const val KEY_TITLE = "title"
-private const val BUFFER_SIZE = 8 * 1024
+private val json = Json { ignoreUnknownKeys = true }
 
-data class DownloadSpec(
+@Serializable
+data class ModelDescriptor(
     val id: String,
+    val name: String,
+    val size: String,
     val url: String,
-    val targetFile: File,
-    val sha256: String,
-    val title: String
+    val sha256: String
 )
 
-object DownloadScheduler {
-    fun enqueue(context: Context, spec: DownloadSpec) {
-        val request = OneTimeWorkRequestBuilder<ModelDownloadWorker>()
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-            )
-            .setBackoffCriteria(BackoffPolicy.LINEAR, 30, TimeUnit.SECONDS)
-            .addTag(spec.id)
-            .setInputData(
-                workDataOf(
-                    KEY_URL to spec.url,
-                    KEY_TARGET to spec.targetFile.absolutePath,
-                    KEY_SHA to spec.sha256,
-                    KEY_TITLE to spec.title
-                )
-            )
-            .build()
+@Serializable
+data class SttModelDescriptor(
+    val id: String,
+    val name: String,
+    val language: String,
+    val url: String,
+    val sha256: String
+)
 
-        WorkManager.getInstance(context).enqueueUniqueWork(
-            spec.id,
-            ExistingWorkPolicy.KEEP,
-            request
-        )
-    }
-}
+@Serializable
+data class TessDataDescriptor(
+    val id: String,
+    val language: String,
+    val url: String,
+    val sha256: String
+)
 
-class ModelDownloadWorker(
-    appContext: Context,
-    workerParams: WorkerParameters
-) : CoroutineWorker(appContext, workerParams) {
-
-    override suspend fun getForegroundInfo(): ForegroundInfo {
-        return ForegroundInfo(
-            inputData.getString(KEY_TARGET).hashCode(),
-            DownloadNotifications.create(applicationContext, inputData.getString(KEY_TITLE) ?: "Model download")
-        )
+object Downloads {
+    suspend fun downloadLlmModel(
+        context: Context,
+        descriptor: ModelDescriptor,
+        onProgress: (Int) -> Unit
+    ): AppResult<File> = withContext(Dispatchers.IO) {
+        val targetDir = File(Files.modelsDir(context), descriptor.id)
+        targetDir.mkdirs()
+        val targetFile = File(targetDir, File(descriptor.url).name)
+        downloadFile(descriptor.url, targetFile, descriptor.sha256, onProgress)
     }
 
-    override suspend fun doWork(): Result {
-        val url = inputData.getString(KEY_URL) ?: return Result.failure()
-        val targetPath = inputData.getString(KEY_TARGET) ?: return Result.failure()
-        val sha = inputData.getString(KEY_SHA) ?: return Result.failure()
+    suspend fun downloadSttModel(
+        context: Context,
+        descriptor: SttModelDescriptor,
+        onProgress: (Int) -> Unit
+    ): AppResult<File> = withContext(Dispatchers.IO) {
+        val targetDir = File(Files.sttDir(context), descriptor.id)
+        targetDir.mkdirs()
+        val targetFile = File(targetDir, File(descriptor.url).name)
+        downloadFile(descriptor.url, targetFile, descriptor.sha256, onProgress)
+    }
 
-        val target = File(targetPath)
-        FileUtils.ensureDir(target.parentFile)
+    suspend fun downloadTessdata(
+        context: Context,
+        descriptor: TessDataDescriptor,
+        onProgress: (Int) -> Unit
+    ): AppResult<File> = withContext(Dispatchers.IO) {
+        val targetDir = Files.tessDir(context)
+        val targetFile = File(targetDir, "${descriptor.id}.traineddata")
+        downloadFile(descriptor.url, targetFile, descriptor.sha256, onProgress)
+    }
 
-        return try {
-            withContext(Dispatchers.IO) {
-                downloadToFile(url, target)
-                val checksum = FileUtils.sha256(target)
-                if (!checksum.equals(sha, ignoreCase = true)) {
-                    Logger.e("Checksum mismatch for ${'$'}target: expected ${'$'}sha got ${'$'}checksum")
-                    target.delete()
-                    throw IllegalStateException("Checksum mismatch")
-                }
-            }
-            Result.success()
-        } catch (t: Throwable) {
-            Logger.e("Failed downloading ${'$'}url", t)
-            Result.retry()
+    fun loadLlmCatalog(context: Context): List<ModelDescriptor> =
+        context.assets.open("models.json").use { stream ->
+            val jsonString = stream.readBytes().decodeToString()
+            json.decodeFromString(ListSerializer(ModelDescriptor.serializer()), jsonString)
         }
-    }
 
-    private suspend fun downloadToFile(url: String, target: File) {
-        withContext(Dispatchers.IO) {
-            val connection = (URL(url).openConnection() as HttpURLConnection).apply {
-                connectTimeout = 20_000
-                readTimeout = 20_000
-            }
-            connection.inputStream.use { input ->
-                FileOutputStream(target).use { output ->
-                    val buffer = ByteArray(BUFFER_SIZE)
-                    while (true) {
-                        val read = input.read(buffer)
-                        if (read == -1) break
-                        output.write(buffer, 0, read)
+    fun loadSttCatalog(context: Context): List<SttModelDescriptor> =
+        context.assets.open("stt_models.json").use { stream ->
+            val jsonString = stream.readBytes().decodeToString()
+            json.decodeFromString(ListSerializer(SttModelDescriptor.serializer()), jsonString)
+        }
+
+    fun loadTessCatalog(context: Context): List<TessDataDescriptor> =
+        context.assets.open("tessdata.json").use { stream ->
+            val jsonString = stream.readBytes().decodeToString()
+            json.decodeFromString(ListSerializer(TessDataDescriptor.serializer()), jsonString)
+        }
+
+    private fun downloadFile(
+        url: String,
+        destination: File,
+        expectedSha256: String,
+        onProgress: (Int) -> Unit
+    ): AppResult<File> {
+        return try {
+            destination.parentFile?.mkdirs()
+            val tempFile = File(destination.parentFile, "${destination.name}.download")
+            val connection = URL(url).openConnection() as HttpURLConnection
+            try {
+                connection.connectTimeout = 15_000
+                connection.readTimeout = 30_000
+                connection.connect()
+                val totalBytes = connection.contentLengthLong.takeIf { it > 0 } ?: -1
+                val digest = MessageDigest.getInstance("SHA-256")
+                connection.inputStream.use { input ->
+                    FileOutputStream(tempFile).use { output ->
+                        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                        var downloaded = 0L
+                        while (true) {
+                            val read = input.read(buffer)
+                            if (read == -1) break
+                            output.write(buffer, 0, read)
+                            digest.update(buffer, 0, read)
+                            downloaded += read
+                            if (totalBytes > 0) {
+                                val percent = (downloaded * 100 / totalBytes).toInt().coerceIn(0, 100)
+                                onProgress(percent)
+                            }
+                        }
+                        output.flush()
                     }
                 }
+                val actualSha = digest.digest().toHexString()
+                if (!actualSha.equals(expectedSha256, ignoreCase = true)) {
+                    tempFile.delete()
+                    Logger.e("Checksum mismatch for $url: expected=$expectedSha256 actual=$actualSha")
+                    return AppResult.Error(IllegalStateException("Checksum mismatch"))
+                }
+            } finally {
+                connection.disconnect()
             }
-            connection.disconnect()
+            if (destination.exists()) {
+                destination.delete()
+            }
+            tempFile.renameTo(destination)
+            onProgress(100)
+            AppResult.Success(destination)
+        } catch (t: Throwable) {
+            Logger.e("Download failed for $url", t)
+            AppResult.Error(t)
         }
+    }
+
+    private fun ByteArray.toHexString(): String = joinToString(separator = "") { byte ->
+        "%02x".format(byte)
     }
 }

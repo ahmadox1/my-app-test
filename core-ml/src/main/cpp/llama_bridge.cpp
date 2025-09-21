@@ -1,6 +1,24 @@
 #include <jni.h>
 #include <string>
 
+extern "C" JNIEXPORT jboolean JNICALL
+Java_ai_screentalk_ml_llm_LlamaCppEngine_nativeInit(
+        JNIEnv *env,
+        jobject /* this */,
+        jstring modelPath) {
+    const char *path = env->GetStringUTFChars(modelPath, nullptr);
+    // Placeholder for loading llama.cpp model. Always succeeds for stub implementation.
+    (void) path;
+    env->ReleaseStringUTFChars(modelPath, path);
+    return JNI_TRUE;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_ai_screentalk_ml_llm_LlamaCppEngine_nativeRelease(
+        JNIEnv * /* env */, jobject /* this */) {
+    // Placeholder: nothing to release in stub implementation.
+}
+
 extern "C" JNIEXPORT jobjectArray JNICALL
 Java_ai_screentalk_ml_llm_LlamaCppEngine_nativeGenerate(
         JNIEnv *env,

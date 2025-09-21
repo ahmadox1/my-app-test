@@ -11,11 +11,7 @@ interface LocalModelEngine {
 
     fun isReady(): Boolean
 
-    suspend fun ensureModelAvailable(progress: (Int) -> Unit = {})
+    suspend fun ensureModelAvailable(onProgress: (Int) -> Unit)
 
-    suspend fun generateStream(
-        prompt: String,
-        params: GenParams,
-        onToken: (String) -> Unit
-    ): AppResult<String>
+    suspend fun generateStream(prompt: String, params: GenParams, onToken: (String) -> Unit): AppResult<String>
 }

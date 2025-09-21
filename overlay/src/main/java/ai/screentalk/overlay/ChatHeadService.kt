@@ -15,7 +15,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
@@ -37,6 +36,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicLong
 
 class ChatHeadService : Service() {
 
@@ -47,24 +47,27 @@ class ChatHeadService : Service() {
 
     private val messages = MutableStateFlow<List<ChatMessage>>(emptyList())
     private val input = MutableStateFlow("")
-    private val ttsEnabled = MutableStateFlow(true)
     private val isStreaming = MutableStateFlow(false)
     private val isRecording = MutableStateFlow(false)
+    private val ttsEnabled = MutableStateFlow(true)
+    private val messageId = AtomicLong()
 
     private lateinit var llamaEngine: LlamaCppEngine
-    private lateinit var echoEngine: EchoEngine
+    private val echoEngine: LocalModelEngine = EchoEngine()
     private lateinit var stt: VoskStt
     private lateinit var tts: Tts
 
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        llamaEngine = LlamaCppEngine(this)
-        echoEngine = EchoEngine()
         stt = VoskStt(this)
         tts = Tts(this)
+        llamaEngine = LlamaCppEngine(this)
+        serviceScope.launch(Dispatchers.IO) {
+            llamaEngine.ensureModelAvailable { /* progress handled via notifications later */ }
+        }
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, buildNotification("Bubble ready"))
+        startForeground(NOTIFICATION_ID, buildNotification("Chat bubble ready"))
         createBubble()
     }
 
@@ -72,9 +75,9 @@ class ChatHeadService : Service() {
         super.onDestroy()
         removeBubble()
         removePanel()
-        serviceScope.launch {
-            tts.shutdown()
-        }
+        stt.shutdown()
+        tts.shutdown()
+        llamaEngine.release()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -88,14 +91,14 @@ class ChatHeadService : Service() {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = 50
+            x = 40
             y = 200
         }
         val bubble = LayoutInflater.from(this).inflate(R.layout.overlay_bubble, null) as ImageView
         var lastX = 0
         var lastY = 0
-        var initialX = 0
-        var initialY = 0
+        var startX = 0
+        var startY = 0
         var isDragging = false
 
         bubble.setOnTouchListener { _, event ->
@@ -104,41 +107,31 @@ class ChatHeadService : Service() {
                     isDragging = false
                     lastX = event.rawX.toInt()
                     lastY = event.rawY.toInt()
-                    initialX = layoutParams.x
-                    initialY = layoutParams.y
+                    startX = layoutParams.x
+                    startY = layoutParams.y
                     true
                 }
-
                 MotionEvent.ACTION_MOVE -> {
                     val deltaX = event.rawX.toInt() - lastX
                     val deltaY = event.rawY.toInt() - lastY
                     if (kotlin.math.abs(deltaX) > 10 || kotlin.math.abs(deltaY) > 10) {
                         isDragging = true
-                        layoutParams.x = initialX + deltaX
-                        layoutParams.y = initialY + deltaY
+                        layoutParams.x = startX + deltaX
+                        layoutParams.y = startY + deltaY
                         windowManager.updateViewLayout(bubble, layoutParams)
                     }
                     true
                 }
-
                 MotionEvent.ACTION_UP -> {
-                    if (!isDragging) {
-                        togglePanel()
-                    }
+                    if (!isDragging) togglePanel() else Unit
                     true
                 }
-
                 else -> false
             }
         }
 
         bubbleView = bubble
         windowManager.addView(bubble, layoutParams)
-    }
-
-    private fun removeBubble() {
-        bubbleView?.let { windowManager.removeView(it) }
-        bubbleView = null
     }
 
     private fun togglePanel() {
@@ -158,33 +151,30 @@ class ChatHeadService : Service() {
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            y = 100
+            y = 80
         }
 
         val composeView = ComposeView(this).apply {
             setContent {
-                MaterialTheme {
-                    val messagesState by messages.collectAsState()
-                    val inputState by input.collectAsState()
-                    val streaming by isStreaming.collectAsState()
-                    val recording by isRecording.collectAsState()
-                    val ttsState by ttsEnabled.collectAsState()
-                    ChatPanel(
-                        messages = messagesState,
-                        input = inputState,
-                        isStreaming = streaming,
-                        isRecording = recording,
-                        ttsEnabled = ttsState,
-                        onInputChanged = { input.value = it },
-                        onSend = { handleSend(input.value) },
-                        onMic = { handleMic() },
-                        onToggleTts = { ttsEnabled.update { enabled -> !enabled } },
-                        onClose = { removePanel() }
-                    )
-                }
+                val messageState by messages.collectAsState()
+                val inputState by input.collectAsState()
+                val streaming by isStreaming.collectAsState()
+                val recording by isRecording.collectAsState()
+                val ttsState by ttsEnabled.collectAsState()
+                ChatPanel(
+                    messages = messageState,
+                    input = inputState,
+                    isStreaming = streaming,
+                    isRecording = recording,
+                    ttsEnabled = ttsState,
+                    onInputChanged = { input.value = it },
+                    onSend = { handleSend() },
+                    onMic = { handleMic() },
+                    onToggleTts = { ttsEnabled.update { enabled -> !enabled } },
+                    onClose = { removePanel() }
+                )
             }
         }
-
         panelView = composeView
         windowManager.addView(composeView, params)
     }
@@ -194,31 +184,41 @@ class ChatHeadService : Service() {
         panelView = null
     }
 
-    private fun handleSend(text: String) {
-        val question = text.trim()
-        if (question.isEmpty()) return
+    private fun removeBubble() {
+        bubbleView?.let { windowManager.removeView(it) }
+        bubbleView = null
+    }
+
+    private fun handleSend() {
+        val text = input.value.trim()
+        if (text.isEmpty()) return
         input.value = ""
-        messages.update { it + ChatMessage.User(question) + ChatMessage.Assistant("") }
-        val context = ScreenContextBuilder.lastContext()
-        val prompt = PromptBuilder.build(question, context)
+        val userMessage = ChatMessage.User(messageId.incrementAndGet(), text)
+        val placeholder = ChatMessage.Assistant(messageId.incrementAndGet(), "")
+        messages.update { it + userMessage + placeholder }
+        val prompt = PromptBuilder.build(text, ScreenContextBuilder.lastContext())
         val engine = activeEngine()
         serviceScope.launch {
             isStreaming.value = true
-            val params = LocalModelEngine.GenParams(temperature = 0.7f, maxTokens = 256, topP = 0.95f)
+            val params = LocalModelEngine.GenParams(
+                temperature = 0.7f,
+                maxTokens = 256,
+                topP = 0.9f
+            )
             when (val result = engine.generateStream(prompt, params) { token ->
-                updateAssistant(token)
+                appendAssistant(token)
             }) {
-                is ai.screentalk.common.AppResult.Success -> {
+                is AppResult.Success -> {
                     isStreaming.value = false
                     if (ttsEnabled.value) {
                         tts.speak(result.value)
                     }
                 }
 
-                is ai.screentalk.common.AppResult.Error -> {
+                is AppResult.Error -> {
                     isStreaming.value = false
                     Logger.e("Generation failed", result.throwable)
-                    updateAssistant("Failed: ${result.throwable.message}")
+                    appendAssistant("\nError: ${result.throwable.message}")
                 }
             }
         }
@@ -233,7 +233,7 @@ class ChatHeadService : Service() {
                     val transcript = result.value
                     if (transcript.isNotBlank()) {
                         input.value = transcript
-                        handleSend(transcript)
+                        handleSend()
                     }
                 }
 
@@ -245,7 +245,7 @@ class ChatHeadService : Service() {
         }
     }
 
-    private fun updateAssistant(delta: String) {
+    private fun appendAssistant(delta: String) {
         messages.update { current ->
             if (current.isEmpty()) return@update current
             val updated = current.toMutableList()
@@ -258,26 +258,25 @@ class ChatHeadService : Service() {
         }
     }
 
-    private fun activeEngine(): LocalModelEngine {
-        return if (llamaEngine.isReady()) llamaEngine else echoEngine
-    }
+    private fun activeEngine(): LocalModelEngine =
+        if (this::llamaEngine.isInitialized && llamaEngine.isReady()) llamaEngine else echoEngine
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         val manager = getSystemService(NotificationManager::class.java)
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Chat bubble",
-            NotificationManager.IMPORTANCE_MIN
+            "ScreenTalk Overlay",
+            NotificationManager.IMPORTANCE_LOW
         )
         manager.createNotificationChannel(channel)
     }
 
-    private fun buildNotification(text: String): Notification =
+    private fun buildNotification(content: String): Notification =
         NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_btn_speak_now)
             .setContentTitle("ScreenTalk")
-            .setContentText(text)
+            .setContentText(content)
+            .setSmallIcon(android.R.drawable.ic_btn_speak_now)
             .setOngoing(true)
             .build()
 
@@ -290,7 +289,7 @@ class ChatHeadService : Service() {
         }
 
     companion object {
-        private const val NOTIFICATION_ID = 404
         private const val CHANNEL_ID = "overlay_chat"
+        private const val NOTIFICATION_ID = 1001
     }
 }

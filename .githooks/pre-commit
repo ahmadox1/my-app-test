@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if git diff --cached --name-only | grep -E '\.(apk|aab|ap_|dex|so|gguf)$' >/dev/null; then
+if git diff --cached --diff-filter=AM --name-only | grep -E '\.(apk|aab|ap_|dex|so|gguf)$' >/dev/null; then
   echo "Error: binary artifacts detected in commit. Remove them before committing."
   exit 1
 fi

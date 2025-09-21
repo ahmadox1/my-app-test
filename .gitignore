@@ -10,13 +10,12 @@
 local.properties
 captures/
 
-# Native/ML binaries (we download at runtime)
+# Native/ML binaries (downloaded at runtime)
 **/jniLibs/
 **/*.so
 **/*.gguf
 /models/
 assets/models/
-gradle/wrapper/gradle-wrapper.jar
 
 # IDE
 .idea/
