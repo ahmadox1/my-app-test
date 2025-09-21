@@ -1,0 +1,9 @@
+[
+  {
+    "id": "ara",
+    "name": "Tesseract Arabic",
+    "sizeBytes": 15000000,
+    "sha256": "4444444444444444444444444444444444444444444444444444444444444444",
+    "url": "https://github.com/tesseract-ocr/tessdata_best/raw/main/ara.traineddata"
+  }
+]

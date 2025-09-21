@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+# SPDX-License-Identifier: Apache-2.0
+#
 
 ##############################################################################
 #
@@ -37,7 +39,7 @@
 #         * compound commands having a testable exit status, especially «case»;
 #         * various built-in commands including «command», «set», and «ulimit».
 #
-#       Important for patching:
+#   Important for patching:
 #
 #   (2) This script targets any POSIX shell, so it avoids extensions provided
 #       by Bash, Ksh, etc; in particular arrays are avoided.
@@ -55,7 +57,7 @@
 #       Darwin, MinGW, and NonStop.
 #
 #   (3) This script is generated from the Groovy template
-#       https://github.com/gradle/gradle/blob/HEAD/subprojects/plugins/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
+#       https://github.com/gradle/gradle/blob/HEAD/platforms/jvm/plugins-application/src/main/resources/org/gradle/api/internal/plugins/unixStartScript.txt
 #       within the Gradle project.
 #
 #       You can find Gradle at https://github.com/gradle/gradle/.
@@ -80,13 +82,57 @@ do
     esac
 done
 
-APP_HOME=$( cd "${APP_HOME:-./}" && pwd -P ) || exit
-
-APP_NAME="Gradle"
+# This is normally unused
+# shellcheck disable=SC2034
 APP_BASE_NAME=${0##*/}
+# Discard cd standard output in case $CDPATH is set (https://github.com/gradle/gradle/issues/25036)
+APP_HOME=$( cd -P "${APP_HOME:-./}" > /dev/null && printf '%s\n' "$PWD" ) || exit
 
-# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
-DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+WRAPPER_JAR="$APP_HOME/gradle/wrapper/gradle-wrapper.jar"
+WRAPPER_JAR_B64="$WRAPPER_JAR.base64"
+
+ensure_wrapper_jar() {
+    if [ -f "$WRAPPER_JAR" ]; then
+        return 0
+    fi
+
+    if [ ! -f "$WRAPPER_JAR_B64" ]; then
+        die "Gradle wrapper JAR is missing (expected $WRAPPER_JAR) and no base64 source was found."
+    fi
+
+    umask 022
+
+    if command -v base64 >/dev/null 2>&1; then
+        if base64 --decode "$WRAPPER_JAR_B64" >"$WRAPPER_JAR.tmp" 2>/dev/null; then
+            mv "$WRAPPER_JAR.tmp" "$WRAPPER_JAR"
+            return 0
+        fi
+        rm -f "$WRAPPER_JAR.tmp"
+    fi
+
+    if command -v python3 >/dev/null 2>&1; then
+        python3 - "$WRAPPER_JAR_B64" "$WRAPPER_JAR" <<'PY'
+import base64
+import io
+import os
+import sys
+
+src, dst = sys.argv[1:3]
+with open(src, "rb") as fh:
+    data = base64.b64decode(fh.read())
+
+tmp_path = dst + ".tmp"
+with open(tmp_path, "wb") as out:
+    out.write(data)
+os.replace(tmp_path, dst)
+PY
+        return 0
+    fi
+
+    die "Unable to materialize Gradle wrapper JAR; install 'base64' or 'python3'."
+}
+
+ensure_wrapper_jar
 
 # Use the maximum available, or set MAX_FD != -1 to use that value.
 MAX_FD=maximum
@@ -114,7 +160,7 @@ case "$( uname )" in                #(
   NONSTOP* )        nonstop=true ;;
 esac
 
-CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+CLASSPATH="\\\"\\\""
 
 
 # Determine the Java command to use to start the JVM.
@@ -147,7 +193,7 @@ if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
     case $MAX_FD in #(
       max*)
         # In POSIX sh, ulimit -H is undefined. That's why the result is checked to see if it worked.
-        # shellcheck disable=SC3045
+        # shellcheck disable=SC2039,SC3045
         MAX_FD=$( ulimit -H -n ) ||
             warn "Could not query maximum file descriptor limit"
     esac
@@ -155,7 +201,7 @@ if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
       '' | soft) :;; #(
       *)
         # In POSIX sh, ulimit -n is undefined. That's why the result is checked to see if it worked.
-        # shellcheck disable=SC3045
+        # shellcheck disable=SC2039,SC3045
         ulimit -n "$MAX_FD" ||
             warn "Could not set maximum file descriptor limit to $MAX_FD"
     esac
@@ -200,16 +246,20 @@ if "$cygwin" || "$msys" ; then
     done
 fi
 
-# Collect all arguments for the java command;
-#   * $DEFAULT_JVM_OPTS, $JAVA_OPTS, and $GRADLE_OPTS can contain fragments of
-#     shell script including quotes and variable substitutions, so put them in
-#     double quotes to make sure that they get re-expanded; and
-#   * put everything else in single quotes, so that it's not re-expanded.
+
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+DEFAULT_JVM_OPTS='"-Xmx64m" "-Xms64m"'
+
+# Collect all arguments for the java command:
+#   * DEFAULT_JVM_OPTS, JAVA_OPTS, and optsEnvironmentVar are not allowed to contain shell fragments,
+#     and any embedded shellness will be escaped.
+#   * For example: A user cannot expect ${Hostname} to be expanded, as it is an environment variable and will be
+#     treated as '${Hostname}' itself on the command line.
 
 set -- \
         "-Dorg.gradle.appname=$APP_BASE_NAME" \
         -classpath "$CLASSPATH" \
-        org.gradle.wrapper.GradleWrapperMain \
+        -jar "$APP_HOME/gradle/wrapper/gradle-wrapper.jar" \
         "$@"
 
 # Stop when "xargs" is not available.

@@ -1,28 +1,11 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# Preserve service entry points
+-keep class ai.screentalk.overlay.ChatHeadService
+-keep class ai.screentalk.screen.ScreenCaptureService
+-keep class ai.screentalk.screen.accessibility.ScreenReaderService
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Preserve JNI bridges
+-keep class ai.screentalk.ml.llm.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
-
-# TensorFlow Lite
--keep class org.tensorflow.lite.** { *; }
--keep class org.tensorflow.lite.support.** { *; }
-
-# OpenCV
--keep class org.opencv.** { *; }
+# Keep ML Kit and tess-two classes
+-keep class com.google.mlkit.** { *; }
+-keep class com.googlecode.tesseract.android.** { *; }
