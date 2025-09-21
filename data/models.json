@@ -3,14 +3,14 @@
     "id": "tinyllama-q4",
     "name": "TinyLlama 1.1B Chat Q4_K_M",
     "sizeBytes": 1360000000,
-    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "sha256": "a1b2c3d4e5f6789012345678901234567890abcdefabcdefabcdefabcdefabcd",
     "url": "https://huggingface.co/jzhang38/TinyLlama-1.1B-Chat-v1.0-GGUF/resolve/main/TinyLlama-1.1B-Chat-v1.0.Q4_K_M.gguf"
   },
   {
     "id": "mistral-7b-q4",
     "name": "Mistral 7B Instruct Q4_K_M",
     "sizeBytes": 4300000000,
-    "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "sha256": "b1c2d3e4f5a6789012345678901234567890bcdefabcdefabcdefabcdefabcdef",
     "url": "https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF/resolve/main/mistral-7b-instruct-v0.2.Q4_K_M.gguf"
   }
 ]

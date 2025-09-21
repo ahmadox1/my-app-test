@@ -71,4 +71,6 @@ assets/     – (empty) reserved for future bundled assets.
 - [ML Kit Text Recognition](https://developers.google.com/ml-kit) — Google Play Services Terms.
 - [tess-two](https://github.com/adaptech-cz/Tesseract4Android) — Apache 2.0 License.
 
-> ملاحظة: قيم SHA256 في ملفات `data/*.json` تعتبر أماكن انتظار، يرجى تحديثها بالقيم الفعلية قبل الإصدار.
+> ملاحظة: قيم SHA256 في ملفات `data/*.json`:
+> - `tessdata.json`: تم التحقق من القيم وهي صحيحة
+> - `models.json` و `stt_models.json`: تحتاج للتحديث بالقيم الفعلية قبل الإصدار

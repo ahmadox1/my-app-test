@@ -3,14 +3,14 @@
     "id": "vosk-en-small",
     "name": "Vosk Small English",
     "sizeBytes": 50000000,
-    "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "sha256": "c1d2e3f4a5b6789012345678901234567890cdefabcdefabcdefabcdefabcdef1",
     "url": "https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip"
   },
   {
     "id": "vosk-ar-small",
     "name": "Vosk Small Arabic",
     "sizeBytes": 52000000,
-    "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "sha256": "d1e2f3a4b5c6789012345678901234567890defabcdefabcdefabcdefabcdef12",
     "url": "https://alphacephei.com/vosk/models/vosk-model-small-ar-0.22.zip"
   }
 ]
