@@ -26,11 +26,13 @@
 
 ## التقنيات المستخدمة
 
+- **Kotlin**: لغة البرمجة الأساسية (محول من Java)
 - **Android SDK**: منصة التطوير الأساسية
 - **TensorFlow Lite**: لنماذج التعلم الآلي المحلية
 - **OpenCV**: لمعالجة الصور وتحليل الشاشة
 - **MediaProjection API**: لالتقاط محتوى الشاشة
 - **Accessibility Service**: للوصول لمحتوى التطبيقات
+- **GitHub Actions**: للبناء التلقائي و CI/CD
 
 ## متطلبات النظام
 
@@ -40,12 +42,28 @@
 
 ## التثبيت والتشغيل
 
+### للمستخدمين:
 1. قم بتنزيل ملف APK من releases
 2. فعّل "المصادر غير المعروفة" في إعدادات الأمان
 3. قم بتثبيت التطبيق
 4. امنح الصلاحيات المطلوبة:
    - صلاحية التقاط الشاشة
    - صلاحية الوصول للتطبيقات (Accessibility)
+
+### للمطورين:
+```bash
+# استنساخ المشروع
+git clone https://github.com/ahmadox1/my-app-test.git
+cd my-app-test
+
+# بناء التطبيق (يحتاج Android Studio أو Android SDK)
+./gradlew assembleDebug
+
+# تثبيت على الجهاز
+adb install app/build/outputs/apk/debug/app-debug.apk
+```
+
+**ملاحظة**: المشروع محول إلى Kotlin ويدعم GitHub Actions للبناء التلقائي.
 5. افتح اللعبة المدعومة وابدأ اللعب!
 
 ## كيفية الاستخدام
