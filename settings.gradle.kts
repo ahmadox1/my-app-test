@@ -11,6 +11,18 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://jitpack.io")
+            content {
+                includeGroup("com.googlecode.tesseract.android")
+            }
+        }
+        maven {
+            url = uri("https://alphacephei.com/maven")
+            content {
+                includeGroup("ai.vosk")
+            }
+        }
     }
 }
 

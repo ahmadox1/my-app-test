@@ -44,21 +44,6 @@ mlkit-text-recognition = { module = "com.google.mlkit:text-recognition", version
 mlkit-text-recognition-chinese = { module = "com.google.mlkit:text-recognition-chinese", version.ref = "mlkit-text-recognition-cjk" }
 mlkit-text-recognition-devanagari = { module = "com.google.mlkit:text-recognition-devanagari", version.ref = "mlkit-text-recognition-cjk" }
 mlkit-text-recognition-korean = { module = "com.google.mlkit:text-recognition-korean", version.ref = "mlkit-text-recognition-cjk" }
-# --- داخل [libraries] ---
-
-# ... سطورك السابقة تبقى كما هي ...
-
-# Tess-two / Vosk aliases (احتفظنا بالاسمين المنشورين + اسمي فرعك)
-
 tess-two = { module = "com.googlecode.tesseract.android:tess-two", version.ref = "tess-two" }
-
-tess-two-published = { module = "com.googlecode.tesseract.android:tess-two", version.ref = "tess-two" }
-
 vosk-android = { module = "ai.vosk:vosk-android", version.ref = "vosk-android" }
-
-vosk-android-published = { module = "ai.vosk:vosk-android", version.ref = "vosk-android" }
-
-# السطر اللي بعد منطقة التعارض في ملفك (مثلاً):
-
-coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
