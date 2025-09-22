@@ -10,15 +10,21 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
-        mavenCentral()
-        maven {
-            url = uri("https://jitpack.io")
+
+        // mavenCentral يكفي لمعظم الاعتمادات (تقدر تشيل content لو ما تحتاجه)
+        mavenCentral {
+            // إذا فعلاً تستخدم group هذا، احتفظ به. وإلا احذف كتلة content بالكامل.
             content {
                 includeGroup("com.googlecode.tesseract.android")
             }
         }
-        maven {
-            url = uri("https://alphacephei.com/maven")
+
+        // أضف JitPack فقط إذا عندك dependecies من JitPack
+        // احذف هذا البلوك إن ما تحتاجه
+        maven("https://jitpack.io")
+
+        // مستودع Vosk الرسمي
+        maven("https://alphacephei.com/maven") {
             content {
                 includeGroup("ai.vosk")
             }
