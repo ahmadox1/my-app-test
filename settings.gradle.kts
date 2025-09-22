@@ -10,25 +10,14 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
+        mavenCentral()
 
-        // mavenCentral يكفي لمعظم الاعتمادات (تقدر تشيل content لو ما تحتاجه)
-        mavenCentral {
-            // إذا فعلاً تستخدم group هذا، احتفظ به. وإلا احذف كتلة content بالكامل.
-            content {
-                includeGroup("com.googlecode.tesseract.android")
-            }
-        }
-
-        // أضف JitPack فقط إذا عندك dependecies من JitPack
-        // احذف هذا البلوك إن ما تحتاجه
-        maven("https://jitpack.io")
-
-        // مستودع Vosk الرسمي
+        // مستودع Vosk الرسمي فقط عند الحاجة له
         maven("https://alphacephei.com/maven") {
-            content {
-                includeGroup("ai.vosk")
-            }
+            content { includeGroup("ai.vosk") }
         }
+        // إذا كنت تستخدم tess-two من com.rmtheis وتبي تقييد المحتوى:
+        // mavenCentral { content { includeGroup("com.rmtheis") } }
     }
 }
 
