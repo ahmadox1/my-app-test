@@ -8,10 +8,9 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
+    repositories { 
         google()
         mavenCentral()
-        maven("https://s01.oss.sonatype.org/content/repositories/releases/") {
             content {
                 includeGroup("com.googlecode.tesseract.android")
             }
