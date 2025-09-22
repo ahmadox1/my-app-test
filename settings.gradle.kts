@@ -8,9 +8,19 @@ pluginManagement {
 
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
+    repositories { 
         google()
         mavenCentral()
+        maven("https://jitpack.io") {
+            content {
+                includeGroup("com.googlecode.tesseract.android")
+            }
+        }
+        maven("https://alphacephei.com/maven") {
+            content {
+                includeGroup("ai.vosk")
+            }
+        }
     }
 }
 
