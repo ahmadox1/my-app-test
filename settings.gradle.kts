@@ -11,12 +11,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = uri("https://alphacephei.com/maven")
-            content {
-                includeGroup("ai.vosk")
-            }
+
+        // مستودع Vosk الرسمي فقط عند الحاجة له
+        maven("https://alphacephei.com/maven") {
+            content { includeGroup("ai.vosk") }
         }
+        // إذا كنت تستخدم tess-two من com.rmtheis وتبي تقييد المحتوى:
+        // mavenCentral { content { includeGroup("com.rmtheis") } }
     }
 }
 
