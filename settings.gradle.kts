@@ -11,11 +11,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven("https://jitpack.io") {
-            content {
-                includeGroup("com.googlecode.tesseract.android")
-            }
-        }
         maven("https://s01.oss.sonatype.org/content/repositories/releases/") {
             content {
                 includeGroup("com.googlecode.tesseract.android")
