@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest package="ai.screentalk.overlay">
-    <application>
-        <service
-            android:name="ai.screentalk.overlay.ChatHeadService"
-            android:exported="false"
-            android:foregroundServiceType="mediaProjection|microphone" />
-    </application>
-</manifest>
