@@ -1,4 +1,0 @@
-<resources>
-    <string name="notification_channel_name">Model downloads</string>
-    <string name="notification_downloading">Downloading required resources…</string>
-</resources>
