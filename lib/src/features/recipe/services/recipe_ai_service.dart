@@ -8,6 +8,10 @@ import '../models/recipe_request.dart';
 import '../models/recipe_suggestion.dart';
 import 'calorie_calculator.dart';
 
+/// خدمة الوصفات باستخدام نموذج ذكاء اصطناعي مجاني من Hugging Face
+/// 
+/// هذه الخدمة ترسل طلبات حقيقية إلى نموذج AI وليست محادثات مسجلة مسبقاً
+/// النموذج المستخدم: Qwen/Qwen2.5-0.5B-Instruct (مجاني ومفتوح المصدر)
 class RecipeAIService {
   RecipeAIService({http.Client? httpClient})
       : _httpClient = httpClient ?? http.Client();
@@ -15,18 +19,29 @@ class RecipeAIService {
   final http.Client _httpClient;
   final _calorieCalculator = const CalorieCalculator();
 
+  /// معرف نموذج الذكاء الاصطناعي المجاني على Hugging Face
   static const _modelId = 'Qwen/Qwen2.5-0.5B-Instruct';
   static const _endpointBase = 'https://api-inference.huggingface.co/models/';
   static const String _token = String.fromEnvironment('HF_API_TOKEN');
 
+  /// توليد وصفة باستخدام نموذج الذكاء الاصطناعي
+  /// 
+  /// يتم إرسال طلب HTTP POST إلى Hugging Face API مع:
+  /// - المكونات المطلوبة
+  /// - نوع الوجبة (عادية، صحية، دسمة)
+  /// - البيانات الصحية للمستخدم (الوزن، الطول، العمر، الهدف)
+  /// 
+  /// النموذج يولد وصفة جديدة في كل مرة بناءً على المدخلات
   Future<RecipeSuggestion> generateRecipe(RecipeRequest request) async {
     final calories = _calorieCalculator.estimateDailyCalories(request.healthProfile);
     final prompt = _buildPrompt(request, calories);
 
+    // في حالة عدم وجود API token، استخدم الوصفة الاحتياطية
     if (_token.isEmpty) {
       return _fallbackRecipe(request, calories);
     }
 
+    // إرسال الطلب إلى نموذج الذكاء الاصطناعي على Hugging Face
     final response = await _httpClient.post(
       Uri.parse('$_endpointBase$_modelId'),
       headers: {
@@ -44,14 +59,17 @@ class RecipeAIService {
       }),
     );
 
+    // إذا نجح الطلب، استخرج النص المولد من النموذج
     if (response.statusCode >= 200 && response.statusCode < 300) {
       final body = jsonDecode(response.body);
       final generated = _extractText(body);
       if (generated != null && generated.isNotEmpty) {
+        // النص المولد من نموذج AI - وليس محفوظاً مسبقاً
         return RecipeSuggestion.fromText(generated);
       }
     }
 
+    // في حالة فشل API، استخدم الوصفة الاحتياطية
     return _fallbackRecipe(request, calories);
   }
 
@@ -81,6 +99,13 @@ class RecipeAIService {
     return buffer.toString();
   }
 
+  /// وصفة احتياطية بسيطة
+  /// 
+  /// ملاحظة هامة: هذه الوصفة تُستخدم فقط في حالتين:
+  /// 1. عدم تمرير HF_API_TOKEN عند بناء التطبيق
+  /// 2. فشل طلب API للنموذج الذكي
+  /// 
+  /// في الاستخدام الطبيعي مع API token صالح، يتم استخدام نموذج AI الحقيقي
   RecipeSuggestion _fallbackRecipe(RecipeRequest request, int? calories) {
     final style = request.mealStyle;
     final text = '''# وصفة ${style.label} سريعة

@@ -24,6 +24,40 @@ flutter run --dart-define=HF_API_TOKEN=hf_your_token_here
 
 > **ملاحظة:** إذا لم تقم بتمرير `HF_API_TOKEN` فسيقوم التطبيق بالعمل في وضع المعاينة ويعرض وصفة تجريبية بدون استدعاء الشبكة.
 
+## بناء APK لنظام Android
+
+لبناء ملف APK للتطبيق، استخدم الأمر التالي:
+
+```bash
+flutter build apk --release --dart-define=HF_API_TOKEN=hf_your_token_here
+```
+
+سيتم إنشاء ملف APK في المسار:
+```
+build/app/outputs/flutter-apk/app-release.apk
+```
+
+### بناء APK بدون مفتاح API (وضع التجريبي)
+
+إذا أردت بناء APK بدون تضمين مفتاح API (سيستخدم الوصفات التجريبية فقط):
+
+```bash
+flutter build apk --release
+```
+
+### التحقق من استخدام نموذج الذكاء الاصطناعي
+
+التطبيق **يستخدم نموذج ذكاء اصطناعي حقيقي ومجاني** من Hugging Face وليس محادثات مسجلة مسبقاً:
+
+- **النموذج المستخدم:** `Qwen/Qwen2.5-0.5B-Instruct` 
+- **المنصة:** [Hugging Face Inference API](https://huggingface.co/docs/api-inference/index)
+- **كل طلب يتم إرساله مباشرة** إلى API نموذج الذكاء الاصطناعي مع معلومات المستخدم (المكونات، نوع الوجبة، البيانات الصحية)
+- الوصفة الاحتياطية (`_fallbackRecipe`) **تستخدم فقط** في حالتين:
+  1. عدم تمرير مفتاح `HF_API_TOKEN`
+  2. فشل طلب API للنموذج
+
+يمكنك التحقق من الكود في ملف `lib/src/features/recipe/services/recipe_ai_service.dart` (السطور 22-56).
+
 ## بنية المشروع
 
 ```
@@ -64,3 +98,10 @@ flutter test
 ## الترخيص
 
 هذا المشروع متاح تحت رخصة MIT، ويمكنك التعديل والاستخدام بحرية مع ذكر المصدر.
+
+---
+
+## المستندات الإضافية
+
+- [AI_VERIFICATION.md](AI_VERIFICATION.md) - وثيقة شاملة للتحقق من استخدام نموذج الذكاء الاصطناعي
+- [BUILD_INSTRUCTIONS.md](BUILD_INSTRUCTIONS.md) - تعليمات مفصلة لبناء APK واختبار التطبيق
