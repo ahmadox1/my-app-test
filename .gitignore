@@ -44,11 +44,9 @@ app.*.map.json
 /android/app/release
 
 # Android related
-**/android/**/gradle-wrapper.jar
+# Note: gradlew and gradlew.bat should be committed for build reproducibility
 **/android/.gradle
 **/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
 **/android/key.properties
