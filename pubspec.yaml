@@ -1,5 +1,5 @@
-name: ai_recipe_chef
-description: تطبيق Flutter لاقتراح وصفات ذكية باستخدام نموذج ذكاء اصطناعي مفتوح المصدر مع واجهة عربية.
+name: ar_memory_app
+description: تطبيق واقع معزز لحفظ الذكريات في المواقع الجغرافية.
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -12,9 +12,26 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  http: ^1.2.0
+  
+  # Camera & AR
+  camera: ^0.10.5+9
+  ar_flutter_plugin: ^0.7.3
+  
+  # Location & Maps
+  geolocator: ^11.0.0
+  google_maps_flutter: ^2.5.3
+  permission_handler: ^11.3.0
+  
+  # Storage
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.2
+  
+  # UI
   google_fonts: ^6.2.1
   intl: ^0.19.0
+  
+  # Utilities
+  uuid: ^4.3.3
 
 flutter:
   uses-material-design: true

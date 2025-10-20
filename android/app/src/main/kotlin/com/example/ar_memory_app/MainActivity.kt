@@ -1,4 +1,4 @@
-package com.example.ai_recipe_chef
+package com.example.ar_memory_app
 
 import io.flutter.embedding.android.FlutterActivity
 
