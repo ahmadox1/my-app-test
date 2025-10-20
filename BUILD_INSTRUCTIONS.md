@@ -97,6 +97,19 @@ adb install build/app/outputs/flutter-apk/app-release.apk
 
 ## حل المشاكل الشائعة
 
+### مشكلة: "Gradle wrapper not found" أو "gradlew: command not found"
+**الحل:** تأكد من أن ملفات Gradle wrapper موجودة في المستودع:
+- `android/gradlew` (Unix/Mac/Linux)
+- `android/gradlew.bat` (Windows)
+- `android/gradle/wrapper/gradle-wrapper.jar`
+- `android/gradle/wrapper/gradle-wrapper.properties`
+
+هذه الملفات مضمنة في المستودع ويجب أن تكون موجودة. إذا كانت مفقودة، يمكنك إعادة إنشائها باستخدام:
+```bash
+cd android
+gradle wrapper --gradle-version 8.3
+```
+
 ### مشكلة: "flutter command not found"
 **الحل:** أضف Flutter إلى PATH:
 ```bash
