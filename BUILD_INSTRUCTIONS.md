@@ -23,6 +23,24 @@
    java -version
    ```
 
+4. **Google Maps API Key**
+   - احصل على مفتاح API مجاني من [Google Cloud Console](https://console.cloud.google.com/)
+   - فعّل Google Maps SDK for Android
+   - راجع [دليل الحصول على API Key](https://developers.google.com/maps/documentation/android-sdk/get-api-key)
+
+## الإعداد الأولي
+
+### إعداد Google Maps API Key
+
+1. افتح ملف `android/app/src/main/AndroidManifest.xml`
+2. ابحث عن السطر:
+   ```xml
+   <meta-data
+       android:name="com.google.android.geo.API_KEY"
+       android:value="YOUR_GOOGLE_MAPS_API_KEY_HERE"/>
+   ```
+3. استبدل `YOUR_GOOGLE_MAPS_API_KEY_HERE` بمفتاح API الخاص بك
+
 ## خطوات البناء
 
 ### 1. تثبيت المكتبات

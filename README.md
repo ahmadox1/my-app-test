@@ -16,8 +16,17 @@
 - [Flutter 3.22.0](https://docs.flutter.dev/get-started/install) أو أحدث
 - Android SDK 24 أو أحدث
 - كاميرا وGPS على الجهاز
+- مفتاح Google Maps API (للحصول على مفتاح مجاني، راجع [Google Maps Platform](https://developers.google.com/maps/documentation/android-sdk/get-api-key))
 
-## الإعداد والتشغيل
+## الإعداد
+
+### 1. إعداد Google Maps API Key
+
+1. احصل على مفتاح API من [Google Cloud Console](https://console.cloud.google.com/)
+2. افتح ملف `android/app/src/main/AndroidManifest.xml`
+3. استبدل `YOUR_GOOGLE_MAPS_API_KEY_HERE` بمفتاح API الخاص بك
+
+### 2. تثبيت المكتبات والتشغيل
 
 ```bash
 # تثبيت المكتبات
